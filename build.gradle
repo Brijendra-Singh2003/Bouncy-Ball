@@ -1,0 +1,39 @@
+// The plugins block applies various plugins to the project. The 'java' plugin provides core functionality for compiling and testing Java source code, while the 'application' plugin enables the creation of a runnable distribution.
+plugins {
+id 'java'
+id 'application'
+}
+
+// This section specifies the Java version compatibility for the project's source and target bytecode.
+java {
+sourceCompatibility = JavaVersion.VERSION_17
+targetCompatibility = JavaVersion.VERSION_17
+}
+
+// The repositories block defines the repositories where Gradle will search for and download dependencies.
+repositories {
+// The Maven Central Repository is the default repository for most open-source Java libraries.
+mavenCentral()
+// This repository is specifically required for accessing the LibGDX framework's dependencies.
+maven { url "https://oss.sonatype.org/content/repositories/snapshots/" }
+}
+
+// All external libraries required for the project are declared within the dependencies block.
+dependencies {
+// These dependencies provide a logging facade and a simple implementation.
+implementation 'org.slf4j:slf4j-api:2.0.7'
+runtimeOnly 'org.slf4j:slf4j-simple:2.0.7'
+
+// This is the primary dependency for the core LibGDX framework.
+implementation "com.badlogicgames.gdx:gdx:1.12.1"
+
+// These dependencies are the backend and native libraries necessary for running the application on a desktop environment.
+implementation "com.badlogicgames.gdx:gdx-backend-lwjgl3:1.12.1"
+runtimeOnly "com.badlogicgames.gdx:gdx-platform:1.12.1:natives-desktop"
+
+}
+
+// The application block configures the main class that is executed upon application launch.
+application {
+mainClass = 'Main'
+}
