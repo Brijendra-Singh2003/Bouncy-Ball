@@ -1,5 +1,5 @@
 # Bouncy-Ball
-A simple Java Swing project that simulates a ball bouncing within a window.
+A simple Java Game inspired by OG game **Breakout**.
 
 ## Getting Started
 ### Requirements
