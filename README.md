@@ -3,7 +3,7 @@ A simple Java Game inspired by OG game **Breakout**.
 
 ## Getting Started
 ### Requirements
-* Java 8 or later
+* Java 17 or later
 * Gradle (optional, for build automation)
 
 ### Clone the Repository
