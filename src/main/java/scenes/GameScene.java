@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -17,10 +19,13 @@ import gameobjects.Paddle;
 
 enum GameState {
     IDLE,
+    PAUSED,
     PLAYING,
 };
 
 public class GameScene extends ApplicationAdapter {
+    private Sound gameOverSound;
+    private Music backgroundMusic;
     private ShapeRenderer shapeRenderer;
     private Ball ball = null;
     private Paddle paddle;
@@ -36,18 +41,35 @@ public class GameScene extends ApplicationAdapter {
         shapeRenderer = new ShapeRenderer();
         gameState = GameState.IDLE;
         paddle = new Paddle(10, 75);
+        gameOverSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sounds/game over.mp3"));
+        backgroundMusic = Gdx.audio.newMusic(Gdx.files.internal("core/assets/music/bgm.mp3"));
 
         generateBlocks();
+        backgroundMusic.setLooping(true);
+    }
+
+    private void start() {
+        blocks.clear();
+        generateBlocks();
+        ball = new Ball();
+        gameState = GameState.PLAYING;
+        backgroundMusic.play();
     }
 
     private void update() {
-        if (gameState == GameState.IDLE) {
-            if (Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
-                gameState = GameState.PLAYING;
-                ball = new Ball();
-                blocks.clear();
-                generateBlocks();
+        boolean spacePressed = Gdx.input.isKeyJustPressed(Input.Keys.SPACE);
+
+        if (spacePressed && gameState != null) {
+            switch (gameState) {
+                case IDLE -> this.start();
+                case PAUSED -> this.resume();
+                case PLAYING -> this.pause();
+                default -> {
+                }
             }
+        }
+
+        if (gameState == GameState.PAUSED || gameState == GameState.IDLE) {
             return;
         }
 
@@ -69,9 +91,23 @@ public class GameScene extends ApplicationAdapter {
         }
 
         if (ball.getY() < -ball.getRadii()) {
-            gameState = GameState.IDLE;
             ball = null;
+            gameOverSound.play(1f);
+            backgroundMusic.pause();
+            gameState = GameState.IDLE;
         }
+    }
+
+    @Override
+    public void pause() {
+        gameState = GameState.PAUSED;
+        backgroundMusic.pause();
+    }
+
+    @Override
+    public void resume() {
+        gameState = GameState.PLAYING;
+        backgroundMusic.play();
     }
 
     @Override

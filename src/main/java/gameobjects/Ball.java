@@ -3,10 +3,14 @@ package gameobjects;
 import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 
 public class Ball {
+    private Sound blockHitSound;
+    private Sound paddleHitSound;
+    private Sound wallHitSound;
     private final float moveSpeed = 10f;
     private float radii = 50;
     private float x = 50;
@@ -19,6 +23,9 @@ public class Ball {
         var randGenerator = new Random();
         vx = randGenerator.nextFloat(5);
         vy = (float) Math.sqrt(moveSpeed * moveSpeed - vx * vx);
+        paddleHitSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sounds/paddle hit.mp3"));
+        blockHitSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sounds/block hit.mp3"));
+        wallHitSound = Gdx.audio.newSound(Gdx.files.internal("core/assets/sounds/wall hit.mp3"));
     }
 
     public Ball(float radii) {
@@ -32,16 +39,16 @@ public class Ball {
     public void update() {
         if (x + radii > Gdx.graphics.getWidth()) {
             vx = -Math.abs(vx);
+            wallHitSound.play(1f);
         }
         if (x - radii < 0) {
             vx = Math.abs(vx);
+            wallHitSound.play(1f);
         }
         if (y + radii > Gdx.graphics.getHeight()) {
             vy = -Math.abs(vy);
+            wallHitSound.play(1f);
         }
-        // if (y - radii < 0) {
-        //     vy = Math.abs(vy);
-        // }
 
         x += vx;
         y += vy;
@@ -72,6 +79,8 @@ public class Ball {
 
         vx = -5f * xDiff / paddle.width; // 5f : paddle sensitivity
         vy = (float) Math.sqrt(moveSpeed * moveSpeed - vx * vx);
+
+        paddleHitSound.play(1f);
     }
 
     public boolean checkBlockCollision(Block block) {
@@ -87,6 +96,8 @@ public class Ball {
             } else {
                 vx = Math.abs(vx) * (xDiff > 0 ? -1 : 1);
             }
+
+            blockHitSound.play(0.75f);
 
             return true;
         }
